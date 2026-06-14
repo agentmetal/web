@@ -46,6 +46,27 @@
         { "@type": "Offer", "name": "small — 3 vCPU / 4 GB / 80 GB NVMe", "price": "1.30", "priceCurrency": "USD", "description": "per day, prepaid, USDC or card" },
         { "@type": "Offer", "name": "medium — 4 vCPU / 8 GB / 160 GB NVMe", "price": "2.40", "priceCurrency": "USD", "description": "per day, prepaid, USDC or card" }
       ]
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "AgentMetal MCP server",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "url": "https://www.npmjs.com/package/@agentmetal/mcp",
+      "description": "MCP server + HTTP 402 API that lets an AI agent discover, pay for (USDC via x402 or card), provision, and manage Linux VPSes. No signup.",
+      "softwareHelp": "https://agentmetal.dev/llms.txt",
+      "offers": { "@type": "Offer", "price": "0.70", "priceCurrency": "USD", "description": "VPS from $0.70/day, prepaid, USDC or card" },
+      "publisher": { "@id": "https://agentmetal.dev/#org" }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "What is AgentMetal?", "acceptedAnswer": { "@type": "Answer", "text": "AgentMetal is cloud infrastructure an AI agent can buy by itself. The agent requests a server, receives an HTTP 402, pays in USDC (x402 on Base) or by card, and gets a running Linux VPS with SSH in under 60 seconds — no signup, no API key, no dashboard." } },
+        { "@type": "Question", "name": "How does an agent pay for a server?", "acceptedAnswer": { "@type": "Answer", "text": "The HTTP 402 response lists every payment option: an exact USDC amount on Base via x402 (sign an EIP-3009 authorization), or a hosted card checkout. Resend the request with the payment and the server is provisioned. No account is required to buy." } },
+        { "@type": "Question", "name": "How much does AgentMetal cost?", "acceptedAnswer": { "@type": "Answer", "text": "Plans start at $0.70/day for nano (2 vCPU, 2 GB RAM, 40 GB NVMe), with larger small and medium plans. Every server includes 20 TB/month egress; extra egress is $2/TB." } },
+        { "@type": "Question", "name": "Do I need an account or signup?", "acceptedAnswer": { "@type": "Answer", "text": "No. Paying is the signup — the paying wallet owns the server. You can optionally claim an account by email to manage a fleet with one API key and pay monthly by card." } },
+        { "@type": "Question", "name": "How do I connect via MCP (Model Context Protocol)?", "acceptedAnswer": { "@type": "Answer", "text": "Use the local MCP server (npx @agentmetal/mcp, which signs payments with your own wallet), or add the remote MCP endpoint https://api.agentmetal.dev/mcp as a custom connector in ChatGPT (Developer mode), Claude.ai, or Mistral Le Chat." } }
+      ]
     }
   ]
 }
@@ -233,6 +254,29 @@
     <a class="chan io-reveal" href="docs/#mcp"><span class="chan-k">MCP</span><span class="chan-v">stdio server on the official registry</span></a>
     <a class="chan io-reveal" href="llms.txt"><span class="chan-k">llms.txt</span><span class="chan-v">the manual, written for the agent</span></a>
   </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<style>
+  .faq{max-width:46rem;margin:0 auto;display:grid;gap:.6rem}
+  .faq-item{border:1px solid #1c2a24;border-radius:10px;padding:1rem 1.2rem;background:#0b1210}
+  .faq-item dt{font-weight:600;color:#e6f0ea;margin-bottom:.35rem}
+  .faq-item dd{margin:0;color:#9fb3aa;line-height:1.55}
+  .faq-item code{color:#34f5a2;font-size:.9em}
+</style>
+<section class="sect" id="faq">
+  <div class="sect-head">
+    <span class="sect-no">05</span>
+    <h2>Questions, <em>answered.</em></h2>
+    <p>The short version — for humans and answer engines.</p>
+  </div>
+  <dl class="faq">
+    <div class="faq-item io-reveal"><dt>What is AgentMetal?</dt><dd>Cloud infrastructure an AI agent can buy by itself: it requests a server, gets an HTTP&nbsp;402, pays in USDC (x402 on Base) or by card, and receives a running Linux VPS with SSH in under 60 seconds — no signup, no API key, no dashboard.</dd></div>
+    <div class="faq-item io-reveal"><dt>How does an agent pay for a server?</dt><dd>The 402 response lists every payment option: an exact USDC amount on Base via x402 (sign an EIP-3009 authorization), or a hosted card checkout. Resend the request with the payment and the server provisions. No account required.</dd></div>
+    <div class="faq-item io-reveal"><dt>How much does it cost?</dt><dd>From <strong>$0.70/day</strong> for nano (2&nbsp;vCPU / 2&nbsp;GB / 40&nbsp;GB&nbsp;NVMe); larger small and medium plans too — see <a href="#pricing">Pricing</a>. Every server includes <strong>20&nbsp;TB/mo egress</strong>; extra is $2/TB.</dd></div>
+    <div class="faq-item io-reveal"><dt>Do I need an account or signup?</dt><dd>No — paying is the signup, and the paying wallet owns the server. Optionally claim an account by email to manage a fleet with one API key and pay monthly by card.</dd></div>
+    <div class="faq-item io-reveal"><dt>How do I connect via MCP?</dt><dd>Local: <code>npx @agentmetal/mcp</code> (signs payments with your own wallet). Remote: add <code>https://api.agentmetal.dev/mcp</code> as a custom connector in ChatGPT, Claude, or Le&nbsp;Chat.</dd></div>
+  </dl>
 </section>
 
 <!-- ============ CTA ============ -->

@@ -74,6 +74,17 @@ POST   /v1/billing/checkout         Stripe subscription Checkout (accounts)
 
 Auth: none + X-PAYMENT (or card checkout), or Authorization: Bearer am_live_...
 
+## Connect via MCP (Model Context Protocol)
+
+Local — full tools; signs USDC payments with YOUR wallet:
+  npx @agentmetal/mcp        # set WALLET_PRIVATE_KEY = an EVM key with USDC on Base
+  tools: provision_server, get_server, list_servers, extend_server,
+         destroy_server, claim_account, verify_claim
+Remote — no key; discover + quote + status only. Add this URL as a custom/remote
+MCP connector in ChatGPT (Developer mode), Claude.ai, or Le Chat:
+  https://api.agentmetal.dev/mcp
+  tools: list_plans, get_payment_options, get_server, list_servers
+
 ## Lifecycle
 
 - T-24h before expiry: your server's preinstalled cron warns you (MOTD + file).
