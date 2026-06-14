@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AgentMetal — the infra provider your agent can use itself</title>
+<meta name="description" content="VMs starting at $0.70/day, paid with USDC (x402) or credit card. HTTP 402 → pay → SSH in under 60 seconds. No signup, no API key. Storage and Agent Memory coming soon.">
+<meta name="theme-color" content="#060807">
+<link rel="canonical" href="https://agentmetal.dev/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AgentMetal">
+<meta property="og:title" content="AgentMetal — the infra provider your agent can use itself">
+<meta property="og:description" content="VMs starting at $0.70/day, paid with USDC (x402) or credit card. HTTP 402 → pay → SSH in under 60s. No signup, no API key.">
+<meta property="og:url" content="https://agentmetal.dev/">
+<meta property="og:image" content="https://agentmetal.dev/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AgentMetal — the infra provider your agent can use itself">
+<meta name="twitter:description" content="VMs starting at $0.70/day. USDC (x402) or card. SSH in under 60 seconds.">
+<meta name="twitter:image" content="https://agentmetal.dev/assets/og.jpg">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://agentmetal.dev/#org",
+      "name": "AgentMetal",
+      "url": "https://agentmetal.dev/",
+      "description": "The infra provider AI agents can use themselves: VPS provisioning over HTTP 402, paid with USDC (x402) or credit card, no signup."
+    },
+    {
+      "@type": "WebSite",
+      "url": "https://agentmetal.dev/",
+      "name": "AgentMetal",
+      "publisher": { "@id": "https://agentmetal.dev/#org" }
+    },
+    {
+      "@type": "Product",
+      "name": "AgentMetal VPS",
+      "description": "Linux VPS for AI agents, provisioned in under 60 seconds via HTTP 402. Pay per day with USDC on Base (x402) or credit card — no account required.",
+      "brand": { "@id": "https://agentmetal.dev/#org" },
+      "offers": [
+        { "@type": "Offer", "name": "nano — 2 vCPU / 2 GB / 40 GB NVMe", "price": "0.70", "priceCurrency": "USD", "description": "per day, prepaid, USDC or card" },
+        { "@type": "Offer", "name": "small — 3 vCPU / 4 GB / 80 GB NVMe", "price": "1.30", "priceCurrency": "USD", "description": "per day, prepaid, USDC or card" },
+        { "@type": "Offer", "name": "medium — 4 vCPU / 8 GB / 160 GB NVMe", "price": "2.40", "priceCurrency": "USD", "description": "per day, prepaid, USDC or card" }
+      ]
+    }
+  ]
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23060807'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='%2334f5a2' font-family='monospace'>4</text></svg>">
+<script type="importmap">
+  { "imports": { "three": "./assets/vendor/three.module.js" } }
+</script>
+</head>
+<body data-page="landing">
+
+<div class="grain" aria-hidden="true"></div>
+
+<header class="nav">
+  <a class="nav-mark" href="./">
+    <span class="nav-dot" aria-hidden="true"></span>AGENT<em>METAL</em>
+  </a>
+  <nav class="nav-links" aria-label="Primary">
+    <a href="docs/">docs</a>
+    <a href="llms.txt">llms.txt</a>
+    <a href="#pricing">pricing</a>
+    <a class="nav-cta" href="docs/#quickstart">deploy <span aria-hidden="true">→</span></a>
+  </nav>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <canvas id="lattice" aria-hidden="true"></canvas>
+  <div class="hero-veil" aria-hidden="true"></div>
+
+  <div class="hero-inner">
+    <p class="hero-kicker reveal"><span class="chip chip-grn">HTTP 402</span></p>
+    <h1 class="hero-title">
+      <span class="reveal d1">The infra provider</span>
+      <span class="reveal d2">your agent can use <em>itself.</em></span>
+    </h1>
+    <p class="hero-sub reveal d3">
+      Discover → pay → provision → renew. One endpoint, USDC over
+      <a href="https://www.x402.org" rel="noopener">x402</a> or a credit card,
+      a running VPS with SSH in under sixty seconds. No signup. No API key. No dashboard.
+    </p>
+    <div class="hero-actions reveal d4">
+      <a class="btn btn-solid" href="docs/#quickstart">Provision a server</a>
+      <a class="btn btn-ghost" href="llms.txt">Send your agent <span aria-hidden="true">↗</span></a>
+    </div>
+    <p class="hero-meta reveal d5">
+      <span>nano · 2 vCPU / 2 GB</span><span class="sep">·</span>
+      <span class="grn">starting from $0.70 / day</span><span class="sep">·</span>
+      <span>prepaid USDC on Base or credit card</span>
+    </p>
+  </div>
+
+  <div class="hero-ticker reveal d6" role="presentation">
+    <div class="ticker-track">
+      <span>POST /v1/servers</span><i>402</i><span>X-PAYMENT verified</span><i>201</i>
+      <span>srv_kx04 provisioning… ash</span><i>38s</i><span>ssh root@188.245.32.17</span>
+      <i>↻</i><span>extend +7d · settled 0x9f…c2</span><i>402</i><span>spawn sibling — quota-capped</span>
+      <span aria-hidden="true">POST /v1/servers</span><i aria-hidden="true">402</i><span aria-hidden="true">X-PAYMENT verified</span><i aria-hidden="true">201</i>
+      <span aria-hidden="true">srv_kx04 provisioning… ash</span><i aria-hidden="true">38s</i><span aria-hidden="true">ssh root@188.245.32.17</span>
+      <i aria-hidden="true">↻</i><span aria-hidden="true">extend +7d · settled 0x9f…c2</span><i aria-hidden="true">402</i><span aria-hidden="true">spawn sibling — quota-capped</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TERMINAL ============ -->
+<section class="sect sect-term" id="demo">
+  <div class="sect-head">
+    <span class="sect-no">01</span>
+    <h2>Sixty seconds, <em>no humans.</em></h2>
+    <p>The whole product is this terminal session.</p>
+  </div>
+  <div class="term io-reveal" aria-label="Terminal demo of an agent provisioning a server">
+    <div class="term-bar">
+      <span class="term-dot"></span><span class="term-dot"></span><span class="term-dot"></span>
+      <span class="term-title">openclaw-agent — ~/wallet</span>
+      <span class="term-time" id="term-clock">t+00.0s</span>
+    </div>
+    <pre class="term-body" id="term-body" aria-live="off"></pre>
+  </div>
+</section>
+
+<!-- ============ FLOW ============ -->
+<section class="sect" id="how">
+  <div class="sect-head">
+    <span class="sect-no">02</span>
+    <h2>The 402 <em>handshake.</em></h2>
+    <p>We take USDC on Base or a credit card.</p>
+  </div>
+  <ol class="flow">
+    <li class="flow-step io-reveal">
+      <span class="flow-code">REQ</span>
+      <h3>Ask for a server</h3>
+      <p><code>POST /v1/servers {plan, days}</code> — no auth header, no account, nothing.</p>
+    </li>
+    <li class="flow-step io-reveal">
+      <span class="flow-code grn">402</span>
+      <h3>Get your payment options</h3>
+      <p>One machine-readable response with every way to pay: exact USDC amount on Base, or a hosted card-checkout link. Pick one.</p>
+    </li>
+    <li class="flow-step io-reveal">
+      <span class="flow-code">PAY</span>
+      <h3>Wallet signs — or card taps</h3>
+      <p>EIP-3009 authorization in an <code>X-PAYMENT</code> header (we never touch keys), or complete the card checkout.</p>
+    </li>
+    <li class="flow-step io-reveal">
+      <span class="flow-code grn">201</span>
+      <h3>Root on a real machine</h3>
+      <p>IP + SSH key + expiry. Cloud-init writes <code>/root/SERVER.md</code> — the VM's birth certificate — so the resident agent knows how to renew, claim, and spawn siblings.</p>
+    </li>
+  </ol>
+</section>
+
+<!-- ============ PRICING ============ -->
+<section class="sect" id="pricing">
+  <div class="sect-head">
+    <span class="sect-no">03</span>
+    <h2>Prepaid by the <em>day.</em></h2>
+    <p>VMs starting at $0.70/day. Pay with USDC or card. No account required.</p>
+  </div>
+  <div class="price-grid">
+    <article class="price-card io-reveal">
+      <header><h3>nano</h3><span class="chip">starter</span></header>
+      <p class="price"><strong>$0.70</strong><span>/day</span></p>
+      <p class="price-alt">USDC or card · $20/mo billed monthly with an account</p>
+      <ul>
+        <li>2 vCPU · 2 GB RAM · 40 GB NVMe</li>
+        <li>20 TB egress included</li>
+        <li>One agent, running 24/7</li>
+      </ul>
+      <a class="btn btn-ghost btn-full" href="docs/#quickstart">curl it</a>
+    </article>
+    <article class="price-card price-hot io-reveal">
+      <header><h3>small</h3><span class="chip chip-grn">balanced</span></header>
+      <p class="price"><strong>$1.30</strong><span>/day</span></p>
+      <p class="price-alt">USDC or card · $38/mo billed monthly with an account</p>
+      <ul>
+        <li>3 vCPU · 4 GB RAM · 80 GB NVMe</li>
+        <li>Agent plus its services and queues</li>
+        <li>Spawn-a-sibling ready</li>
+      </ul>
+      <a class="btn btn-solid btn-full" href="docs/#quickstart">read the quickstart</a>
+    </article>
+    <article class="price-card io-reveal">
+      <header><h3>medium</h3><span class="chip">performance</span></header>
+      <p class="price"><strong>$2.40</strong><span>/day</span></p>
+      <p class="price-alt">USDC or card · $68/mo billed monthly with an account</p>
+      <ul>
+        <li>4 vCPU · 8 GB RAM · 160 GB NVMe</li>
+        <li>Built for heavier workloads</li>
+        <li>Run fleets under one account</li>
+      </ul>
+      <a class="btn btn-ghost btn-full" href="docs/#plans">compare plans</a>
+    </article>
+  </div>
+  <div class="soon io-reveal">
+    <span class="chip chip-amb">coming soon</span>
+    <div class="soon-items">
+      <div class="soon-item">
+        <h4>Storage</h4>
+        <p>Durable space your agent can buy by the gigabyte.</p>
+      </div>
+      <div class="soon-item">
+        <h4>Agent Memory</h4>
+        <p>A native-Markdown persistence layer for what your agent learns — ultra low cost, built for recall, not speed.</p>
+      </div>
+    </div>
+  </div>
+  <p class="fineprint io-reveal">Every plan, every payer — USDC (x402) or card · prepaid 1–30 days per payment · 20&nbsp;TB/mo egress included, buy more anytime · failed provisions are never charged · monthly billing needs a registered account.</p>
+</section>
+
+<!-- ============ DISTRIBUTION ============ -->
+<section class="sect" id="channels">
+  <div class="sect-head">
+    <span class="sect-no">04</span>
+    <h2>Already in your agent's <em>toolbox.</em></h2>
+    <p>Install a skill, hand your agent a wallet, walk away.</p>
+  </div>
+  <div class="chan-grid">
+    <a class="chan io-reveal" href="docs/#skills"><span class="chan-k">ClawHub</span><span class="chan-v">OpenClaw skill · auditable, no hidden instructions</span></a>
+    <a class="chan io-reveal" href="docs/#skills"><span class="chan-k">Hermes</span><span class="chan-v">drop-in skill file for ~/.hermes/skills</span></a>
+    <a class="chan io-reveal" href="docs/#mcp"><span class="chan-k">MCP</span><span class="chan-v">stdio server on the official registry</span></a>
+    <a class="chan io-reveal" href="llms.txt"><span class="chan-k">llms.txt</span><span class="chan-v">the manual, written for the agent</span></a>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="outro">
+  <p class="outro-402" aria-hidden="true">402</p>
+  <h2 class="io-reveal">Give your agents<br><em>their own cloud.</em></h2>
+  <p class="outro-sub io-reveal">Not just a server — all the infrastructure your agents need to work, provisioned and paid in one HTTP&nbsp;402.<br>Servers today. Storage and Agent&nbsp;Memory next.</p>
+  <div class="hero-actions io-reveal">
+    <a class="btn btn-solid" href="docs/#quickstart">Read the quickstart</a>
+    <a class="btn btn-ghost" href="llms.txt">Point your agent at llms.txt</a>
+  </div>
+</section>
+
+<footer class="foot">
+  <span>AGENT<em>METAL</em></span>
+  <nav aria-label="Footer">
+    <a href="docs/">docs</a><a href="llms.txt">llms.txt</a><a href="agents.md">agents.md</a><a href="terms/">terms</a>
+  </nav>
+</footer>
+
+<script type="module" src="assets/hero.js"></script>
+<script src="assets/main.js" defer></script>
+</body>
+</html>

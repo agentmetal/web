@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Terms &amp; Acceptable Use — AgentMetal</title>
+<meta name="description" content="AgentMetal terms of service and acceptable use policy. Prepaid VPS, USDC or card, operated by E-NGENIUM INFRAESTRUCTURA S. de R.L. de C.V. (iNBest Cloud), Guadalajara, Mexico.">
+<meta name="theme-color" content="#060807">
+<link rel="canonical" href="https://agentmetal.dev/terms/">
+<link rel="alternate" hreflang="en" href="https://agentmetal.dev/terms/">
+<link rel="alternate" hreflang="es" href="https://agentmetal.dev/terms/es/">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Terms &amp; Acceptable Use — AgentMetal">
+<meta property="og:description" content="Prepaid VPS, USDC or card. Operated by iNBest Cloud, Guadalajara, México.">
+<meta property="og:url" content="https://agentmetal.dev/terms/">
+<meta property="og:image" content="https://agentmetal.dev/assets/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://agentmetal.dev/assets/og.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23060807'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='%2334f5a2' font-family='monospace'>4</text></svg>">
+<style>
+  .legal-wrap { max-width: 760px; margin: 0 auto; padding: 120px 32px 120px; }
+  .legal-wrap .meta { font-size: 12.5px; color: var(--dim); letter-spacing: 0.04em; margin-bottom: 8px; }
+  .legal-wrap h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(38px,5vw,54px); line-height: 1.05; margin-bottom: 14px; }
+  .legal-wrap h1 em { font-style: italic; color: var(--grn); }
+  .legal-wrap .lede { color: var(--mut); margin-bottom: 6px; max-width: 640px; }
+  .legal-wrap h2 { font-family: var(--serif); font-weight: 400; font-size: 26px; margin: 52px 0 12px; padding-top: 22px; border-top: 1px solid var(--line); }
+  .legal-wrap h2 .n { font-family: var(--mono); font-size: 15px; color: var(--grn); margin-right: 12px; }
+  .legal-wrap p { color: var(--mut); margin-bottom: 14px; max-width: 680px; }
+  .legal-wrap ul { color: var(--mut); margin: 0 0 16px 20px; max-width: 660px; }
+  .legal-wrap li { margin-bottom: 7px; }
+  .legal-wrap strong { color: var(--ink); font-weight: 600; }
+  .legal-wrap a { color: var(--ink); text-decoration-color: var(--grn); text-underline-offset: 3px; }
+  .legal-wrap a:hover { color: var(--grn); }
+  .legal-note { border-left: 2px solid var(--line); padding: 4px 0 4px 18px; margin: 28px 0; font-size: 13px; color: var(--dim); font-style: italic; }
+</style>
+</head>
+<body data-page="docs">
+
+<div class="grain" aria-hidden="true"></div>
+
+<header class="nav">
+  <a class="nav-mark" href="../">
+    <span class="nav-dot" aria-hidden="true"></span>AGENT<em>METAL</em>
+  </a>
+  <nav class="nav-links" aria-label="Primary">
+    <a href="../docs/">docs</a>
+    <a href="../llms.txt">llms.txt</a>
+    <a href="../#pricing">pricing</a>
+    <a class="nav-cta" href="../docs/#quickstart">deploy <span aria-hidden="true">→</span></a>
+  </nav>
+</header>
+
+<main class="legal-wrap">
+  <p class="meta">Effective 13 June 2026 · v1 <a href="es/">Español ↗</a></p>
+  <h1>Terms &amp; <em>acceptable use.</em></h1>
+  <p class="lede">Plain-language terms for using AgentMetal. Short on purpose; we'll expand them as the
+  service leaves preview. Using AgentMetal means you accept what's below.</p>
+
+  <h2><span class="n">1</span>Who we are</h2>
+  <p>AgentMetal is operated by <strong>E-NGENIUM INFRAESTRUCTURA, S. de R.L. de C.V.</strong>
+  (trading as "iNBest Cloud"), Av. Unión #163, Piso 1, Col. Lafayette, C.P. 44140, Guadalajara,
+  Jalisco, México. In these terms "we" / "us" means that company and "you" means the person or
+  agent using the service. Questions and abuse reports: <a href="mailto:abuse@agentmetal.dev">abuse@agentmetal.dev</a>.</p>
+  <p class="legal-note">AgentMetal is in early preview. Features, prices, and these terms may change;
+  the service is provided as-is (see §7).</p>
+
+  <h2><span class="n">2</span>What we sell</h2>
+  <p>Prepaid Linux virtual machines (VPS), billed per day — 1 to 30 days per payment — or monthly if
+  you register an account. You get root access; what you run on the machine, and its legality, is your
+  responsibility (§4). You're responsible for securing your own server and your own keys.</p>
+
+  <h2><span class="n">3</span>Payment &amp; refunds</h2>
+  <ul>
+    <li>Pay with USDC on Base (x402) or a credit/debit card. Prices are in US dollars and exclude any
+    taxes that may apply.</li>
+    <li><strong>Running servers are non-refundable.</strong> This is stated in the payment request
+    (the HTTP 402 response) before you pay, every time.</li>
+    <li>If provisioning fails, crypto authorizations simply expire (you are <strong>never charged</strong>);
+    card payments are <strong>retried across locations</strong> until your server is created, and refunded
+    only if we ultimately cannot provision it. You never keep a charge without a server.</li>
+    <li>Card payments are processed by Stripe; crypto settles on-chain through a payment facilitator.
+    We don't store card numbers or private keys.</li>
+  </ul>
+
+  <h2><span class="n">4</span>Acceptable use</h2>
+  <p>You may not use AgentMetal, and may not let anyone use a machine you control, to:</p>
+  <ul>
+    <li>Break the law — Mexican law or the law that applies to you or your users; this includes child
+    sexual abuse material, fraud, and distributing malware or stolen data.</li>
+    <li><strong>Mine, farm, or plot cryptocurrency, or run staking / validator / blockchain nodes.</strong>
+    Our upstream infrastructure providers prohibit this; we have to pass that rule through.</li>
+    <li>Launch or assist denial-of-service (DoS/DDoS) attacks, port scanning, intrusion attempts, or
+    any other network abuse.</li>
+    <li>Send spam or unsolicited bulk messaging. (Outbound SMTP / port 25 is blocked by default.)</li>
+    <li>Operate botnets, command-and-control, phishing, or credential-harvesting infrastructure.</li>
+    <li>Use the service if you are subject to applicable sanctions, or to evade them.</li>
+  </ul>
+
+  <h2><span class="n">5</span>Fair use &amp; enforcement</h2>
+  <p>Default quotas (active servers per payer, provisioning rate) keep the platform healthy; registered
+  accounts get higher defaults. When something looks abusive we may ask for verification (an email, a
+  card), <strong>suspend</strong> a machine (powered off, data preserved, where practical), and for
+  repeat or serious abuse <strong>terminate and blocklist</strong>. We act on credible abuse reports
+  from upstreams and third parties. We aim to notify you, but may act first when harm is ongoing.</p>
+
+  <h2><span class="n">6</span>Expiry &amp; your data</h2>
+  <p>Servers are prepaid. After expiry a machine keeps running for a 24-hour grace period, then is
+  <strong>permanently destroyed</strong> along with its data. Back up anything you need before then —
+  backups are your responsibility. We don't keep destroyed-server data.</p>
+
+  <h2><span class="n">7</span>Service "as is"; liability</h2>
+  <p>The service is provided <strong>as is</strong>, without warranties, and without a uptime SLA during
+  preview. To the extent the law allows, our total liability to you for any claim is limited to what you
+  paid us in the 30 days before the claim. Nothing here limits liability that can't be limited under
+  Mexican law, including your rights as a consumer under the Ley Federal de Protección al Consumidor.</p>
+
+  <h2><span class="n">8</span>Privacy</h2>
+  <p>We collect the minimum to run the service: an email only if you register an account, payment
+  records, and operational logs (including the IPs and activity needed to handle abuse). Payments are
+  handled by Stripe and the x402 facilitator; wallet addresses are public on-chain by nature. The
+  <strong>responsable</strong> for personal data is iNBest Cloud; how we handle it and how you exercise
+  your ARCO rights is described in our
+  <a href="https://www.inbest.cloud/en/aviso-de-privacidad" rel="noopener">aviso de privacidad</a>.</p>
+
+  <h2><span class="n">9</span>Governing law</h2>
+  <p>These terms are governed by the federal law of México. Any dispute is subject to the courts of
+  <strong>Guadalajara, Jalisco</strong>, without prejudice to any mandatory consumer-protection rights
+  you have where you live.</p>
+
+  <h2><span class="n">10</span>Changes</h2>
+  <p>We may update these terms; the version and effective date at the top will change. Continuing to use
+  the service — including renewing a server — after an update means you accept the new terms.</p>
+</main>
+
+<footer class="foot">
+  <span>AGENT<em>METAL</em></span>
+  <nav aria-label="Footer">
+    <a href="../docs/">docs</a><a href="../llms.txt">llms.txt</a><a href="../agents.md">agents.md</a><a href="./">terms</a>
+  </nav>
+</footer>
+
+</body>
+</html>

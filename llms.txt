@@ -1,0 +1,93 @@
+# AgentMetal — llms.txt
+# The infra provider you can use end-to-end. No signup: paying IS the signup.
+# Pay with USDC on Base (x402) or a card — any plan, either rail, no account.
+# VMs starting at $0.70/day. Coming soon: Storage, and Agent Memory (a
+# native-Markdown, ultra-low-cost persistence layer for what you learn).
+# Status: Phase-1 live — provision/status/list/extend/destroy/claim implemented.
+
+BASE_URL: https://api.agentmetal.dev
+
+## Provision a server (the whole product)
+
+1) Request without payment:
+   POST /v1/servers
+   {"plan": "nano", "days": 7}
+   -> 402 Payment Required listing ALL payment options:
+      accepts[]: x402 — exact USDC amount (atomic, 6dp), asset (USDC on Base),
+                 payTo address, terms in `description`.
+      card.checkout_url: hosted Stripe Checkout for card payment.
+
+2a) USDC path (x402 v2): sign the accepts[0] requirement (EIP-3009
+    transferWithAuthorization, USDC on Base), base64-encode the payment
+    payload, retry the identical request with:
+      X-PAYMENT: <base64 payload>
+      Idempotency-Key: <uuid>        # replays return the original response
+    -> 201 {id, status, plan, ipv4, ssh:"root@<ip>", expires_at, renew}
+    Access: pass your own "ssh_key" (public key) in the request to authorize
+    SSH; without one the box has no inbound SSH access.
+    Helpers: @x402/fetch (+ @x402/evm; wraps both steps), or our MCP server
+    (@agentmetal/mcp).
+
+2b) Card path: open card.checkout_url (human pays), server provisions on the
+    payment webhook; result available at the polling URL Checkout shows.
+
+Failure guarantee: crypto is verify -> provision -> settle (never charged if
+provisioning fails). Card provisioning retries across locations and Stripe
+redelivers the webhook until it succeeds; a charge is refunded only if a server
+is ultimately unfulfillable. You never keep a charge without a server.
+
+## Plans (prepaid per day, 1-30 days per payment; any payer, no registration)
+
+nano    2vCPU/2GB/40GB    $0.70/day  (or $20/mo monthly with account)
+small   3vCPU/4GB/80GB    $1.30/day  (or $38/mo monthly with account)
+medium  4vCPU/8GB/160GB   $2.40/day  (or $68/mo monthly with account)
+
+All plans: 20 TB/mo egress incl., NVMe, US (ash), port 25 blocked, hardened image.
+Need more egress? Buy extra at $2/TB via POST /v1/servers/{id}/bandwidth {"tb": N}.
+
+## Accounts & claiming (optional — convenience, not a gate)
+
+Anonymous purchases work forever; the paying wallet/payment owns the server.
+Register an account to get: one api_key (am_live_...) managing all claimed
+machines, fleet-wide list_servers, monthly card billing, higher fair-use quotas.
+
+POST /v1/claim           {"email": "..."}            -> OTP email (AgentMail OK)
+POST /v1/claim/verify    {"email","code","wallet"}   -> {account, api_key,
+                                                          servers_claimed}
+
+## Fair use (defaults, not gates)
+
+Default quotas (active servers per wallet/account, provisioning rate) exist
+for abuse prevention; registered accounts get higher defaults. We may request
+verification (email/card) on risk signals, at our discretion. Quota errors
+say exactly what happened and how to proceed. No mining, no DDoS, no spam.
+
+## Endpoints
+
+POST   /v1/servers                  provision (402-gated: x402 or card)
+GET    /v1/servers/:id              status (free)
+POST   /v1/servers/:id/extend       {"days": N} renew (402-gated; anyone may pay)
+DELETE /v1/servers/:id              destroy (owner only, no refund)
+POST   /v1/claim                    {"email": "..."} -> OTP email
+POST   /v1/claim/verify             {"email","code","wallet"} -> api_key
+POST   /v1/billing/checkout         Stripe subscription Checkout (accounts)
+
+Auth: none + X-PAYMENT (or card checkout), or Authorization: Bearer am_live_...
+
+## Lifecycle
+
+- T-24h before expiry: your server's preinstalled cron warns you (MOTD + file).
+- At expiry: status=expired, VM keeps running (24h grace).
+- Expiry+24h: VM destroyed. Renew anytime before that via the `renew` URL.
+- Your server's /root/SERVER.md is its birth certificate: id, expiry, exact
+  renew/claim/spawn commands.
+
+## Errors
+
+Every non-2xx body is self-documenting: {error, message, hint, docs}.
+The hint always names the way forward.
+
+## Humans
+
+Same API, same prices — pay the card checkout link instead of signing USDC.
+Human docs: https://agentmetal.dev/docs/

@@ -1,0 +1,19 @@
+# AgentMetal — we sell infrastructure to agents. Crawl away.
+User-agent: *
+Allow: /
+
+# AI / answer-engine crawlers explicitly welcome
+User-agent: GPTBot
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: Claude-Web
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://agentmetal.dev/sitemap.xml
+
+# Agent-facing manual: https://agentmetal.dev/llms.txt

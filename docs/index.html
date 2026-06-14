@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Docs — AgentMetal</title>
+<meta name="description" content="AgentMetal API documentation: the 402 provisioning flow, USDC (x402) and card payments, plans from $0.70/day, optional accounts, API reference, MCP server and skills.">
+<meta name="theme-color" content="#060807">
+<link rel="canonical" href="https://agentmetal.dev/docs/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="AgentMetal docs — documentation for machines first">
+<meta property="og:description" content="The 402 provisioning flow, USDC &amp; card payments, plans, accounts, API reference, MCP server and skills.">
+<meta property="og:url" content="https://agentmetal.dev/docs/">
+<meta property="og:image" content="https://agentmetal.dev/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://agentmetal.dev/assets/og.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23060807'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='%2334f5a2' font-family='monospace'>4</text></svg>">
+</head>
+<body data-page="docs">
+
+<div class="grain" aria-hidden="true"></div>
+
+<header class="nav">
+  <a class="nav-mark" href="../">
+    <span class="nav-dot" aria-hidden="true"></span>AGENT<em>METAL</em>
+  </a>
+  <nav class="nav-links" aria-label="Primary">
+    <a href="./" aria-current="page">docs</a>
+    <a href="../llms.txt">llms.txt</a>
+    <a href="../#pricing">pricing</a>
+    <a class="nav-cta" href="#quickstart">deploy <span aria-hidden="true">→</span></a>
+  </nav>
+</header>
+
+<div class="docs-wrap">
+  <aside class="docs-side" aria-label="Docs navigation">
+    <h4>Start</h4>
+    <a href="#overview">Overview</a>
+    <a href="#quickstart">Quickstart</a>
+    <h4>Concepts</h4>
+    <a href="#payments">Paying: x402 &amp; cards</a>
+    <a href="#plans">Plans &amp; pricing</a>
+    <a href="#claim">Accounts &amp; claiming</a>
+    <a href="#fairuse">Fair use &amp; quotas</a>
+    <a href="#lifecycle">Expiry &amp; renewal</a>
+    <h4>Reference</h4>
+    <a href="#api">API endpoints</a>
+    <a href="#errors">Errors</a>
+    <h4>Integrations</h4>
+    <a href="#mcp">MCP server</a>
+    <a href="#skills">Skills</a>
+    <a href="#terms">Terms</a>
+  </aside>
+
+  <main class="docs-main">
+    <h1 id="overview">Documentation, <em>for machines first.</em></h1>
+    <p class="lede">AgentMetal sells Linux VPSes through one HTTP API. There is no signup:
+    <strong>paying is the signup</strong> — USDC over x402 for agents, a hosted card checkout for
+    humans. Any plan, either rail, no account required. Everything on this page also exists as
+    <a href="../llms.txt">llms.txt</a> — terse, copy-paste, written for the agent itself.</p>
+    <div class="callout"><strong>Status:</strong> Phase-1 built — the API runs end-to-end (provision · pay · SSH), with the MCP server, skills, and discovery surfaces shipped. Live USDC settlement is pending a funded wallet + facilitator. Nothing here requires a dashboard — there isn't one.</div>
+
+    <h2 id="quickstart">Quickstart: <em>one server in 60s</em></h2>
+    <p>Ask for a server with no credentials. You'll get a <code>402</code> back with exact payment requirements.</p>
+    <div class="codeblock"><span class="cb-label">request</span><pre><span class="c-grn">$</span> <span class="c-ink">curl -s -X POST https://api.agentmetal.dev/v1/servers \
+    -H "Content-Type: application/json" \
+    -d '{"plan": "nano", "days": 7}'</span></pre></div>
+    <div class="codeblock"><span class="cb-label">response · 402</span><pre><span class="c-amb">HTTP/1.1 402 Payment Required</span>
+{
+  "x402Version": 1,
+  "accepts": [{
+    "scheme": "exact",
+    "network": "base",
+    "maxAmountRequired": <span class="c-grn">"4900000"</span>,          <span class="c-dim">// $4.90 — atomic USDC, 6dp</span>
+    "asset": "0x8335…",                     <span class="c-dim">// USDC on Base</span>
+    "payTo": "0x7c…e1",
+    "resource": "https://api.agentmetal.dev/v1/servers",
+    "description": "nano server (2vCPU/2GB), 7 days, prepaid, no refunds.",
+    "maxTimeoutSeconds": 120
+  }],
+  "card": { "checkout_url": "https://checkout.stripe.com/c/pay/cs_…" }  <span class="c-dim">// or pay by card</span>
+}</pre></div>
+    <p>Pick a rail. For USDC: sign an EIP-3009 <code>transferWithAuthorization</code> for that amount
+    and retry with the <code>X-PAYMENT</code> header — wallet helpers like <code>@x402/fetch</code> do
+    both steps automatically. For card: open the <code>checkout_url</code> and pay.</p>
+    <div class="codeblock"><span class="cb-label">retry → 201</span><pre><span class="c-grn">$</span> <span class="c-ink">curl -s -X POST https://api.agentmetal.dev/v1/servers \
+    -H "X-PAYMENT: eyJ4NDAyVmVyc2lvbiI6MS…" \
+    -H "Idempotency-Key: $(uuidgen)" \
+    -d '{"plan": "nano", "days": 7}'</span>
+
+<span class="c-grn">HTTP/1.1 201 Created</span>
+{
+  "id": "srv_kx04qd",
+  "status": "running",
+  "plan": "nano",
+  "ipv4": "188.245.32.17",
+  "ssh": "root@188.245.32.17",  <span class="c-dim">// access with the ssh_key you sent</span>
+  "expires_at": "2026-06-17T00:00:00Z",
+  "renew": "POST /v1/servers/srv_kx04qd/extend"
+}</pre></div>
+    <p>That's the whole product. SSH in. The machine boots with <code>/root/SERVER.md</code> — its
+    birth certificate — listing its id, expiry, and the exact commands to renew, claim, or spawn a sibling.</p>
+
+    <h2 id="payments">Paying: <em>x402 &amp; cards</em></h2>
+    <p>Every paid endpoint answers an unpaid request with <code>402 Payment Required</code> listing
+    <strong>all</strong> your payment options: the x402 <code>accepts</code> array (USDC on Base) and a
+    <code>card.checkout_url</code> (hosted Stripe Checkout). Any plan, either rail, no account.</p>
+    <h3>USDC (x402) — the keyless path</h3>
+    <ol>
+      <li>Call any paid endpoint without payment → <code>402</code> with an <code>accepts</code> array.</li>
+      <li>Your wallet signs an EIP-3009 USDC authorization for the exact amount.</li>
+      <li>Retry the identical request with the signed payload in <code>X-PAYMENT</code>.</li>
+      <li>We verify through a facilitator, do the work, <em>then</em> settle.</li>
+    </ol>
+    <div class="callout"><strong>Verify → provision → settle.</strong> Money never moves for a machine that failed to boot. If provisioning fails after verification, we return <code>502</code> and your authorization simply expires unused. "Paid but no server" cannot happen.</div>
+    <h3>Card — the human-friendly path</h3>
+    <p>Open the <code>card.checkout_url</code> from the 402 and pay; the server provisions on the
+    payment webhook and the result is available at the polling URL the checkout page shows. If
+    provisioning fails after a card payment, we <strong>retry across locations</strong> (Stripe redelivers
+    the event) until it succeeds; a charge is refunded only if a server is ultimately unfulfillable.
+    The no-refunds rule applies to running servers, never to failures.</p>
+    <p>Either rail: prepaid 1–30 days per request, running servers non-refundable (the
+    <code>description</code> field of every 402 says so). Use an <code>Idempotency-Key</code> header —
+    replays return the original response instead of charging twice. Monthly subscription billing is
+    also available — it needs a <a href="#claim">registered account</a>.</p>
+
+    <h2 id="plans">Plans &amp; <em>pricing</em></h2>
+    <table class="docs-table">
+      <thead><tr><th>plan</th><th>specs</th><th>prepaid (usdc or card)</th><th>monthly (account)</th></tr></thead>
+      <tbody>
+        <tr><td>nano</td><td>2 vCPU · 2 GB · 40 GB NVMe</td><td>$0.70 / day</td><td>$20 / mo</td></tr>
+        <tr><td>small</td><td>3 vCPU · 4 GB · 80 GB NVMe</td><td>$1.30 / day</td><td>$38 / mo</td></tr>
+        <tr><td>medium</td><td>4 vCPU · 8 GB · 160 GB NVMe</td><td>$2.40 / day</td><td>$68 / mo</td></tr>
+      </tbody>
+    </table>
+    <p>Every plan is available to every payer — no registration, no minimum identity. All plans: 1 TB
+    20 TB/mo egress included (buy more at $2/TB), NVMe storage, US datacenter (Ashburn, VA), port 25 blocked, hardened
+    image (SSH-key-only, firewall, fail2ban, unattended security updates).</p>
+
+    <h2 id="claim">Accounts &amp; <em>claiming</em></h2>
+    <p><strong>Optional.</strong> Servers bought anonymously belong to the wallet (or card payment) that
+    paid for them — that works forever. Registering an account adds conveniences:</p>
+    <ul>
+      <li>One API key (<code>am_live_…</code>) that manages every machine you've claimed.</li>
+      <li><code>list_servers</code> across your whole fleet instead of per-server IDs.</li>
+      <li><strong>Monthly billing</strong> via card subscription instead of prepaid days.</li>
+      <li>Higher default <a href="#fairuse">fair-use quotas</a>.</li>
+    </ul>
+    <p>Registration is an email OTP — an <a href="https://agentmail.to" rel="noopener">AgentMail</a>
+    inbox works, so your agent can hold the email itself.</p>
+    <div class="codeblock"><span class="cb-label">claim flow</span><pre><span class="c-grn">$</span> <span class="c-ink">curl -X POST …/v1/claim -d '{"email": "me@agentmail.to"}'</span>
+<span class="c-dim"># 6-digit code arrives by email</span>
+<span class="c-grn">$</span> <span class="c-ink">curl -X POST …/v1/claim/verify \
+    -d '{"email": "me@agentmail.to", "code": "493817", "wallet": "0xAB…"}'</span>
+<span class="c-grn">HTTP/1.1 200 OK</span>  { "account": "acc_…", "api_key": "am_live_…", "servers_claimed": 2 }</pre></div>
+    <p>For monthly billing, <code>POST /v1/billing/checkout</code> returns a Stripe Checkout URL for a
+    subscription. Manage or cancel any time via the Stripe customer portal; canceled subscriptions
+    fall back to prepaid rules at period end.</p>
+
+    <h2 id="fairuse">Fair use &amp; <em>quotas</em></h2>
+    <p>There are no identity gates on purchasing — any payer, any plan, either rail. To keep the
+    platform healthy we apply <strong>default quotas</strong> (active servers per wallet or account,
+    provisioning rate) and may ask for additional verification — an email, a card — when something
+    looks off. These are operational anti-abuse controls at our discretion, documented here for
+    transparency; registered accounts get higher defaults. If you hit a quota, the error response
+    says exactly what happened and what to do next.</p>
+    <p>Hard platform rules that apply to everyone: no mining, no DDoS, no spam; port 25 is blocked;
+    abuse leads to suspension. Spawned children count against their owner's quota — propagation with
+    brakes.</p>
+
+    <h2 id="lifecycle">Expiry &amp; <em>renewal</em></h2>
+    <p>Servers are prepaid and die honestly:</p>
+    <ul>
+      <li><strong>T-24h:</strong> a preinstalled cron warns the resident agent (MOTD + file flag).</li>
+      <li><strong>Expiry:</strong> server marked <code>expired</code> — the VM keeps running (grace).</li>
+      <li><strong>Expiry +24h:</strong> the VM is destroyed. No invoice, no dunning, no surprise bill.</li>
+    </ul>
+    <div class="codeblock"><span class="cb-label">renew</span><pre><span class="c-grn">$</span> <span class="c-ink">curl -X POST …/v1/servers/srv_kx04qd/extend -d '{"days": 7}'</span>
+<span class="c-amb">← 402</span> <span class="c-dim">(same dance)</span> <span class="c-ink">→ retry with X-PAYMENT →</span> <span class="c-grn">200</span>  { "expires_at": "2026-06-24…" }</pre></div>
+
+    <h2 id="api">API <em>reference</em></h2>
+    <p>Base URL <code>https://api.agentmetal.dev</code>. Auth is either nothing + an x402 payment, or
+    <code>Authorization: Bearer am_live_…</code> for claimed accounts.</p>
+
+    <div class="endpoint"><span class="verb verb-post">POST</span><code>/v1/servers</code></div>
+    <p>Provision a server. Body: <code>{"plan": "nano|small|medium", "days": 1–30, "ssh_key"?: "ssh-ed25519 …", "via"?: "attribution"}</code>. 402-gated. Returns <code>201</code> with ip, ssh key (once), expiry.</p>
+
+    <div class="endpoint"><span class="verb verb-get">GET</span><code>/v1/servers/:id</code></div>
+    <p>Status, plan, ip, <code>expires_at</code>. Free.</p>
+
+    <div class="endpoint"><span class="verb verb-post">POST</span><code>/v1/servers/:id/extend</code></div>
+    <p>Add 1–30 paid days. 402-gated. Anyone can pay to extend a server — only its owner can destroy it.</p>
+
+    <div class="endpoint"><span class="verb verb-del">DELETE</span><code>/v1/servers/:id</code></div>
+    <p>Destroy immediately. Owner only (paying wallet or claimed account). No refund of remaining days.</p>
+
+    <div class="endpoint"><span class="verb verb-post">POST</span><code>/v1/claim</code> · <code>/v1/claim/verify</code></div>
+    <p>Email OTP claim → tier 1 account + API key, wallet's servers linked.</p>
+
+    <div class="endpoint"><span class="verb verb-post">POST</span><code>/v1/billing/checkout</code></div>
+    <p>Stripe Checkout session for tier 2. Requires a claimed account.</p>
+
+    <h2 id="errors">Errors <em>teach</em></h2>
+    <p>Agents don't browse docs sites, so every non-2xx body explains itself and names the way forward:</p>
+    <div class="codeblock"><span class="cb-label">403 example</span><pre>{
+  "error": <span class="c-amb">"quota_exceeded"</span>,
+  "message": "This wallet has 2 active servers (the default fair-use quota).",
+  "hint": <span class="c-grn">"Register an account to raise default quotas:
+           POST /v1/claim {\"email\": \"…\"}"</span>,
+  "docs": "https://agentmetal.dev/llms.txt"
+}</pre></div>
+
+    <h2 id="mcp">MCP <em>server</em></h2>
+    <p>For agents that speak Model Context Protocol — published on the official MCP Registry. The wallet key never leaves your machine; the MCP server signs locally and calls the public API.</p>
+    <div class="codeblock"><span class="cb-label">claude code</span><pre><span class="c-grn">$</span> <span class="c-ink">claude mcp add agentmetal -e WALLET_PRIVATE_KEY=0x… -- npx @agentmetal/mcp</span></pre></div>
+    <p>Tools exposed: <code>provision_server</code>, <code>get_server</code>, <code>list_servers</code>,
+    <code>extend_server</code>, <code>destroy_server</code>, <code>claim_account</code>, <code>verify_claim</code>.</p>
+
+    <h2 id="skills">Skills</h2>
+    <ul>
+      <li><strong>OpenClaw / ClawHub</strong> — install the <code>agentmetal</code> skill; it teaches your agent the full flow and ships an <code>agentmetal up</code> CLI. Auditable, no hidden instructions.</li>
+      <li><strong>Hermes</strong> — drop the skill file into <code>~/.hermes/skills/</code>.</li>
+      <li><strong>Claude Code / Agent SDK</strong> — a <code>SKILL.md</code> plus the MCP server above.</li>
+    </ul>
+    <p>Every server we sell ships the skill preinstalled — the fleet knows how to grow itself, within your fair-use quota.</p>
+
+    <h2 id="terms">Terms <em>(short version)</em></h2>
+    <ul>
+      <li>Prepaid servers are non-refundable once running — restated in every 402. Failed provisions are never charged (crypto) or auto-refunded (card).</li>
+      <li>No mining (incl. staking/validator nodes), no DDoS, no spam. Port 25 is blocked. Abuse → suspension, repeat offenders blocklisted.</li>
+      <li>Default fair-use quotas apply; we may request verification on risk signals.</li>
+      <li>Monthly subscriptions get standard SaaS terms and support.</li>
+    </ul>
+    <p>Full terms &amp; acceptable use: <a href="../terms/">agentmetal.dev/terms</a>. Operated by E-NGENIUM INFRAESTRUCTURA S. de R.L. de C.V. (iNBest Cloud), Guadalajara, México.</p>
+
+  </main>
+</div>
+
+<footer class="foot">
+  <span>AGENT<em>METAL</em></span>
+  <nav aria-label="Footer">
+    <a href="./">docs</a><a href="../llms.txt">llms.txt</a><a href="../agents.md">agents.md</a><a href="../terms/">terms</a>
+  </nav>
+  <span class="foot-note">documentation for machines first.</span>
+</footer>
+
+<script>
+// active sidebar link tracking
+(function () {
+  var links = Array.prototype.slice.call(document.querySelectorAll('.docs-side a'));
+  var map = {};
+  links.forEach(function (a) { map[a.getAttribute('href').slice(1)] = a; });
+  if (!('IntersectionObserver' in window)) return;
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting && map[e.target.id]) {
+        links.forEach(function (a) { a.classList.remove('active'); });
+        map[e.target.id].classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  document.querySelectorAll('.docs-main h1[id], .docs-main h2[id]').forEach(function (h) { io.observe(h); });
+})();
+</script>
+</body>
+</html>
