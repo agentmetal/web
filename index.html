@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AgentMetal — the infra provider your agent can use itself</title>
-<meta name="description" content="VMs starting at $0.70/day, paid with USDC (x402) or credit card. HTTP 402 → pay → SSH in under 60 seconds. No signup, no API key. Storage and Agent Memory coming soon.">
+<meta name="description" content="VMs starting at $0.70/day, paid with USDC (x402) or credit card. HTTP 402 → pay → SSH in under 60 seconds. No signup, no API key. Add-on block storage at $0.01/GB/day; Agent Memory coming soon.">
 <meta name="theme-color" content="#060807">
 <link rel="canonical" href="https://agentmetal.dev/">
 <meta property="og:type" content="website">
@@ -63,7 +63,7 @@
       "mainEntity": [
         { "@type": "Question", "name": "What is AgentMetal?", "acceptedAnswer": { "@type": "Answer", "text": "AgentMetal is cloud infrastructure an AI agent can buy by itself. The agent requests a server, receives an HTTP 402, pays in USDC (x402 on Base) or by card, and gets a running Linux VPS with SSH in under 60 seconds — no signup, no API key, no dashboard." } },
         { "@type": "Question", "name": "How does an agent pay for a server?", "acceptedAnswer": { "@type": "Answer", "text": "The HTTP 402 response lists every payment option: an exact USDC amount on Base via x402 (sign an EIP-3009 authorization), or a hosted card checkout. Resend the request with the payment and the server is provisioned. No account is required to buy." } },
-        { "@type": "Question", "name": "How much does AgentMetal cost?", "acceptedAnswer": { "@type": "Answer", "text": "Plans start at $0.70/day for nano (2 vCPU, 2 GB RAM, 40 GB NVMe), with larger small and medium plans. Every server includes 20 TB/month egress; extra egress is $2/TB." } },
+        { "@type": "Question", "name": "How much does AgentMetal cost?", "acceptedAnswer": { "@type": "Answer", "text": "Plans start at $0.70/day for nano (2 vCPU, 2 GB RAM, 40 GB NVMe), with larger small and medium plans. Every server includes 20 TB/month egress; extra egress is $2/TB, and block storage can be added at $0.01/GB/day." } },
         { "@type": "Question", "name": "Do I need an account or signup?", "acceptedAnswer": { "@type": "Answer", "text": "No. Paying is the signup — the paying wallet owns the server. You can optionally claim an account by email to manage a fleet with one API key and pay monthly by card." } },
         { "@type": "Question", "name": "How do I connect via MCP (Model Context Protocol)?", "acceptedAnswer": { "@type": "Answer", "text": "Use the local MCP server (npx @agentmetal/mcp, which signs payments with your own wallet), or add the remote MCP endpoint https://api.agentmetal.dev/mcp as a custom connector in ChatGPT (Developer mode), Claude.ai, or Mistral Le Chat." } }
       ]
@@ -229,16 +229,12 @@
     <span class="chip chip-amb">coming soon</span>
     <div class="soon-items">
       <div class="soon-item">
-        <h4>Storage</h4>
-        <p>Durable space your agent can buy by the gigabyte.</p>
-      </div>
-      <div class="soon-item">
         <h4>Agent Memory</h4>
         <p>A native-Markdown persistence layer for what your agent learns — ultra low cost, built for recall, not speed.</p>
       </div>
     </div>
   </div>
-  <p class="fineprint io-reveal">Every plan, every payer — USDC (x402) or card · prepaid 1–30 days per payment · 20&nbsp;TB/mo egress included, buy more anytime · failed provisions are never charged · monthly billing needs a registered account.</p>
+  <p class="fineprint io-reveal">Every plan, every payer — USDC (x402) or card · prepaid 1–30 days per payment · 20&nbsp;TB/mo egress included, buy more at $2/TB · add-on block storage at $0.01/GB/day · failed provisions are never charged · monthly billing needs a registered account.</p>
 </section>
 
 <!-- ============ DISTRIBUTION ============ -->
@@ -273,7 +269,7 @@
   <dl class="faq">
     <div class="faq-item io-reveal"><dt>What is AgentMetal?</dt><dd>Cloud infrastructure an AI agent can buy by itself: it requests a server, gets an HTTP&nbsp;402, pays in USDC (x402 on Base) or by card, and receives a running Linux VPS with SSH in under 60 seconds — no signup, no API key, no dashboard.</dd></div>
     <div class="faq-item io-reveal"><dt>How does an agent pay for a server?</dt><dd>The 402 response lists every payment option: an exact USDC amount on Base via x402 (sign an EIP-3009 authorization), or a hosted card checkout. Resend the request with the payment and the server provisions. No account required.</dd></div>
-    <div class="faq-item io-reveal"><dt>How much does it cost?</dt><dd>From <strong>$0.70/day</strong> for nano (2&nbsp;vCPU / 2&nbsp;GB / 40&nbsp;GB&nbsp;NVMe); larger small and medium plans too — see <a href="#pricing">Pricing</a>. Every server includes <strong>20&nbsp;TB/mo egress</strong>; extra is $2/TB.</dd></div>
+    <div class="faq-item io-reveal"><dt>How much does it cost?</dt><dd>From <strong>$0.70/day</strong> for nano (2&nbsp;vCPU / 2&nbsp;GB / 40&nbsp;GB&nbsp;NVMe); larger small and medium plans too — see <a href="#pricing">Pricing</a>. Every server includes <strong>20&nbsp;TB/mo egress</strong>; extra is $2/TB, and you can add block storage at <strong>$0.01/GB/day</strong>.</dd></div>
     <div class="faq-item io-reveal"><dt>Do I need an account or signup?</dt><dd>No — paying is the signup, and the paying wallet owns the server. Optionally claim an account by email to manage a fleet with one API key and pay monthly by card.</dd></div>
     <div class="faq-item io-reveal"><dt>How do I connect via MCP?</dt><dd>Local: <code>npx @agentmetal/mcp</code> (signs payments with your own wallet). Remote: add <code>https://api.agentmetal.dev/mcp</code> as a custom connector in ChatGPT, Claude, or Le&nbsp;Chat.</dd></div>
   </dl>
@@ -283,7 +279,7 @@
 <section class="outro">
   <p class="outro-402" aria-hidden="true">402</p>
   <h2 class="io-reveal">Give your agents<br><em>their own cloud.</em></h2>
-  <p class="outro-sub io-reveal">Not just a server — all the infrastructure your agents need to work, provisioned and paid in one HTTP&nbsp;402.<br>Servers today. Storage and Agent&nbsp;Memory next.</p>
+  <p class="outro-sub io-reveal">Not just a server — all the infrastructure your agents need to work, provisioned and paid in one HTTP&nbsp;402.<br>Servers and storage today. Agent&nbsp;Memory next.</p>
   <div class="hero-actions io-reveal">
     <a class="btn btn-solid" href="docs/#quickstart">Read the quickstart</a>
     <a class="btn btn-ghost" href="llms.txt">Point your agent at llms.txt</a>

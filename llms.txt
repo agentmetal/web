@@ -1,11 +1,18 @@
 # AgentMetal — llms.txt
 # The infra provider you can use end-to-end. No signup: paying IS the signup.
 # Pay with USDC on Base (x402) or a card — any plan, either rail, no account.
-# VMs starting at $0.70/day. Coming soon: Storage, and Agent Memory (a
-# native-Markdown, ultra-low-cost persistence layer for what you learn).
-# Status: Phase-1 live — provision/status/list/extend/destroy/claim implemented.
+# VMs starting at $0.70/day, with add-on block storage ($0.01/GB/day) and
+# bandwidth ($2/TB). Coming soon: Agent Memory (a native-Markdown,
+# ultra-low-cost persistence layer for what you learn).
+# Status: Phase-1 live — catalog/provision/status/list/extend/destroy/claim,
+# plus add-on storage/bandwidth and operate (reboot/diagnostics/exec) implemented.
 
 BASE_URL: https://api.agentmetal.dev
+
+## Discover for free (no payment, no account)
+
+GET /v1/catalog -> plans (specs + per-day price), locations, and add-on pricing
+(storage $/GB/day, bandwidth $/TB). Quote before you commit a payment.
 
 ## Provision a server (the whole product)
 
@@ -25,6 +32,9 @@ BASE_URL: https://api.agentmetal.dev
     -> 201 {id, status, plan, ipv4, ssh:"root@<ip>", expires_at, renew}
     Access: pass your own "ssh_key" (public key) in the request to authorize
     SSH; without one the box has no inbound SSH access.
+    Managed key: pass "managed_key": true to have us generate a server-side
+    ed25519 keypair. The private key is returned ONCE in the 201 response
+    (stored only encrypted, never shown again) and enables /exec command runs.
     Helpers: @x402/fetch (+ @x402/evm; wraps both steps), or our MCP server
     (@agentmetal/mcp).
 
@@ -42,8 +52,15 @@ nano    2vCPU/2GB/40GB    $0.70/day  (or $20/mo monthly with account)
 small   3vCPU/4GB/80GB    $1.30/day  (or $38/mo monthly with account)
 medium  4vCPU/8GB/160GB   $2.40/day  (or $68/mo monthly with account)
 
-All plans: 20 TB/mo egress incl., NVMe, US (ash), port 25 blocked, hardened image.
-Need more egress? Buy extra at $2/TB via POST /v1/servers/{id}/bandwidth {"tb": N}.
+All plans: 20 TB/mo egress incl., NVMe, US (ash + hil), port 25 blocked, hardened image.
+
+## Add-ons (on a provisioned server)
+
+Bandwidth: buy extra egress at $2/TB beyond the 20 TB/mo included, via
+  POST /v1/servers/{id}/bandwidth {"tb": N}.
+Storage: attach a block volume at $0.01/GB/day (prorated), via
+  POST /v1/servers/{id}/storage {"gb": 10-1000}. Auto-mounted at
+  /mnt/HC_Volume_<id>.
 
 ## Accounts & claiming (optional — convenience, not a gate)
 
@@ -64,22 +81,33 @@ say exactly what happened and how to proceed. No mining, no DDoS, no spam.
 
 ## Endpoints
 
+GET    /v1/catalog                  plans + locations + add-on pricing (free)
 POST   /v1/servers                  provision (402-gated: x402 or card)
 GET    /v1/servers/:id              status (free)
 POST   /v1/servers/:id/extend       {"days": N} renew (402-gated; anyone may pay)
 DELETE /v1/servers/:id              destroy (owner only, no refund)
+POST   /v1/servers/:id/bandwidth    {"tb": N} extra egress at $2/TB (402-gated)
+POST   /v1/servers/:id/storage      {"gb": 10-1000} block volume $0.01/GB/day (402-gated)
+POST   /v1/servers/:id/reboot       soft reboot (account key + ownership)
+GET    /v1/servers/:id/diagnostics  status + recent actions + VNC console + metrics,
+                                     hypervisor-level, no SSH (account key + ownership)
+POST   /v1/servers/:id/exec         {"command", "timeout_seconds"?} run as root over
+                                     SSH -> {exit_code, stdout, stderr}; 1-120s / 256 KB
+                                     bounded; needs managed_key:true (account key + ownership)
 POST   /v1/claim                    {"email": "..."} -> OTP email
 POST   /v1/claim/verify             {"email","code","wallet"} -> api_key
 POST   /v1/billing/checkout         Stripe subscription Checkout (accounts)
 
-Auth: none + X-PAYMENT (or card checkout), or Authorization: Bearer am_live_...
+Auth: none + X-PAYMENT (or card checkout) for purchase/status; reboot/diagnostics/exec
+require Authorization: Bearer am_live_... AND ownership of the server.
 
 ## Connect via MCP (Model Context Protocol)
 
 Local — full tools; signs USDC payments with YOUR wallet:
   npx @agentmetal/mcp        # set WALLET_PRIVATE_KEY = an EVM key with USDC on Base
-  tools: provision_server, get_server, list_servers, extend_server,
-         destroy_server, claim_account, verify_claim
+  tools (11): provision_server, get_server, list_servers, extend_server,
+         destroy_server, claim_account, verify_claim, get_catalog,
+         reboot_server, server_logs, exec_command
 Remote — no key; discover + quote + status only. Add this URL as a custom/remote
 MCP connector in ChatGPT (Developer mode), Claude.ai, or Le Chat:
   https://api.agentmetal.dev/mcp
