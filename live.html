@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AgentMetal — live · what agents are doing right now</title>
+<meta name="description" content="A realtime stream of what AI agents are doing on AgentMetal right now: servers provisioned, leases extended, USDC settled, storage attached, siblings spawned. Anonymized, live.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#060807">
+<link rel="canonical" href="https://agentmetal.dev/live.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AgentMetal">
+<meta property="og:title" content="AgentMetal — live">
+<meta property="og:description" content="What agents are doing right now: a realtime, anonymized stream of provisions, extensions, payments, and more.">
+<meta property="og:url" content="https://agentmetal.dev/live.html">
+<meta property="og:image" content="https://agentmetal.dev/assets/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AgentMetal — live">
+<meta name="twitter:description" content="What agents are doing right now — realtime, anonymized.">
+<meta name="twitter:image" content="https://agentmetal.dev/assets/og.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23060807'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='%2334f5a2' font-family='monospace'>4</text></svg>">
+</head>
+<body data-page="live">
+
+<div class="grain" aria-hidden="true"></div>
+
+<header class="nav">
+  <a class="nav-mark" href="./">
+    <span class="nav-dot" aria-hidden="true"></span>AGENT<em>METAL</em>
+  </a>
+  <nav class="nav-links" aria-label="Primary">
+    <a href="./">home</a>
+    <a href="docs/">docs</a>
+    <a href="llms.txt">llms.txt</a>
+    <a class="nav-cta" href="docs/#quickstart">deploy <span aria-hidden="true">→</span></a>
+  </nav>
+</header>
+
+<main class="live-wrap">
+  <div class="live-head">
+    <span class="sect-no">LIVE</span>
+    <h1>What agents are <em>doing right now.</em></h1>
+    <p class="live-sub">A realtime, anonymized stream of activity across AgentMetal — servers provisioned, leases extended, USDC settled, storage attached, siblings spawned. No wallets, no IPs, no names.</p>
+    <div class="live-status" id="live-status">
+      <span class="live-pulse" aria-hidden="true"></span>
+      <span id="live-status-text">connecting…</span>
+    </div>
+  </div>
+
+  <ul class="feed" id="feed" aria-live="polite" aria-label="Live activity feed">
+    <li class="feed-empty" id="feed-empty">Waiting for the first events…</li>
+  </ul>
+</main>
+
+<footer class="foot">
+  <span>AGENT<em>METAL</em></span>
+  <nav aria-label="Footer">
+    <a href="./">home</a><a href="docs/">docs</a><a href="llms.txt">llms.txt</a><a href="terms/">terms</a>
+  </nav>
+</footer>
+
+<script>
+// AgentMetal /live — dependency-free realtime feed. Polls /v1/activity, animates only NEW
+// rows in at the top, and reticks relative times every second. Graceful on API failure.
+(function () {
+  'use strict';
+  var API = 'https://api.agentmetal.dev/v1/activity?limit=24';
+  var POLL_MS = 4000;
+  var MAX_ROWS = 50;
+
+  var feed = document.getElementById('feed');
+  var emptyEl = document.getElementById('feed-empty');
+  var statusEl = document.getElementById('live-status');
+  var statusText = document.getElementById('live-status-text');
+  var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Each shown event keeps its absolute base time (epoch ms ≈ now − seconds_ago) so the
+  // relative label can recompute every second without re-fetching. `key` dedups across polls.
+  var shown = []; // [{ key, el, agoEl, at }]
+  var seen = {};
+  var lastOk = 0;
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"]/g, function (ch) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch];
+    });
+  }
+  function relTime(ms) {
+    var s = Math.max(0, Math.round((Date.now() - ms) / 1000));
+    if (s < 60) return s + 's ago';
+    var m = Math.floor(s / 60);
+    if (m < 60) return m + 'm ago';
+    var h = Math.floor(m / 60);
+    if (h < 24) return h + 'h ago';
+    return Math.floor(h / 24) + 'd ago';
+  }
+  function keyFor(e) { return e.seconds_ago + '|' + e.kind + '|' + e.summary; }
+
+  function makeRow(e, animate) {
+    var li = document.createElement('li');
+    li.className = 'feed-row' + (animate ? ' is-new' : '');
+    var at = Date.now() - (Number(e.seconds_ago) || 0) * 1000;
+
+    var dot = document.createElement('span');
+    dot.className = 'feed-dot k-' + e.kind;
+    dot.setAttribute('aria-hidden', 'true');
+
+    var summary = document.createElement('span');
+    summary.className = 'feed-summary';
+    summary.innerHTML = escapeHtml(e.summary);
+
+    var kind = document.createElement('span');
+    kind.className = 'feed-kind k-' + e.kind;
+    kind.textContent = e.kind;
+
+    var ago = document.createElement('span');
+    ago.className = 'feed-ago';
+    ago.textContent = relTime(at);
+
+    li.appendChild(dot);
+    li.appendChild(summary);
+    li.appendChild(kind);
+    li.appendChild(ago);
+    return { li: li, agoEl: ago, at: at };
+  }
+
+  function ingest(events) {
+    if (emptyEl && emptyEl.parentNode) emptyEl.remove();
+    // API returns newest-first; insert oldest-first so the newest ends up on top.
+    var fresh = [];
+    for (var i = 0; i < events.length; i++) {
+      var k = keyFor(events[i]);
+      if (!seen[k]) fresh.push({ e: events[i], k: k });
+    }
+    var firstLoad = shown.length === 0;
+    for (var j = fresh.length - 1; j >= 0; j--) {
+      var item = fresh[j];
+      seen[item.k] = true;
+      var row = makeRow(item.e, !firstLoad && !reduced);
+      feed.insertBefore(row.li, feed.firstChild);
+      shown.unshift({ key: item.k, el: row.li, agoEl: row.agoEl, at: row.at });
+    }
+    // Trim the tail so the DOM (and `seen`) don't grow forever.
+    while (shown.length > MAX_ROWS) {
+      var drop = shown.pop();
+      if (drop.el.parentNode) drop.el.remove();
+      delete seen[drop.key];
+    }
+  }
+
+  function setStatus(ok) {
+    if (ok) {
+      statusEl.classList.remove('is-stale');
+      statusText.textContent = 'live · updating every 4s';
+    } else if (Date.now() - lastOk > 15000) {
+      statusEl.classList.add('is-stale');
+      statusText.textContent = 'reconnecting…';
+    }
+  }
+
+  function poll() {
+    fetch(API, { headers: { accept: 'application/json' } })
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+      .then(function (d) {
+        if (d && Array.isArray(d.events)) { ingest(d.events); lastOk = Date.now(); setStatus(true); }
+      })
+      .catch(function () { setStatus(false); });
+  }
+
+  // Retick relative times every second (no network).
+  setInterval(function () {
+    for (var i = 0; i < shown.length; i++) shown[i].agoEl.textContent = relTime(shown[i].at);
+  }, 1000);
+
+  poll();
+  setInterval(poll, POLL_MS);
+})();
+</script>
+</body>
+</html>

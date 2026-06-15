@@ -15,6 +15,42 @@
     els.forEach(function (el) { el.classList.add('is-in'); });
   }
 
+  /* ---------- live activity ticker (hero) ---------- */
+  // Feed the horizontal ticker from /v1/activity. Anonymized summaries only. Graceful: on any
+  // failure the static fallback markup already in the DOM stays put, so the page never breaks.
+  (function liveTicker() {
+    var track = document.getElementById('live-ticker-track');
+    if (!track) return;
+    var API = 'https://api.agentmetal.dev/v1/activity?limit=18';
+    function render(events) {
+      if (!events || !events.length) return;
+      var parts = [];
+      // Duplicate the sequence so the CSS marquee (translateX -50%) loops seamlessly.
+      for (var pass = 0; pass < 2; pass++) {
+        for (var i = 0; i < events.length; i++) {
+          var hidden = pass === 1 ? ' aria-hidden="true"' : '';
+          if (i > 0) parts.push('<i' + hidden + '>·</i>');
+          parts.push('<span' + hidden + '>' + escapeHtml(events[i].summary) + '</span>');
+        }
+        if (pass === 0) parts.push('<i aria-hidden="true">·</i>');
+      }
+      track.innerHTML = parts.join('');
+    }
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"]/g, function (ch) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch];
+      });
+    }
+    function poll() {
+      fetch(API, { headers: { accept: 'application/json' } })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (d) { if (d && d.events) render(d.events); })
+        .catch(function () { /* keep the static fallback */ });
+    }
+    poll();
+    setInterval(poll, 15000);
+  })();
+
   /* ---------- terminal demo ---------- */
   var body = document.getElementById('term-body');
   var clockEl = document.getElementById('term-clock');
