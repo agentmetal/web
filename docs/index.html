@@ -219,14 +219,19 @@
     <h2 id="mcp">MCP <em>server</em></h2>
     <p>For agents that speak Model Context Protocol — published on the official MCP Registry. The wallet key never leaves your machine; the MCP server signs locally and calls the public API.</p>
     <div class="codeblock"><span class="cb-label">claude code</span><pre><span class="c-grn">$</span> <span class="c-ink">claude mcp add agentmetal -e WALLET_PRIVATE_KEY=0x… -- npx @agentmetal/mcp</span></pre></div>
-    <p>Tools exposed: <code>provision_server</code>, <code>get_server</code>, <code>list_servers</code>,
-    <code>extend_server</code>, <code>destroy_server</code>, <code>claim_account</code>, <code>verify_claim</code>.</p>
+    <p>11 tools exposed: <code>get_catalog</code>, <code>provision_server</code>, <code>get_server</code>, <code>list_servers</code>,
+    <code>extend_server</code>, <code>reboot_server</code>, <code>server_logs</code>, <code>exec_command</code>,
+    <code>destroy_server</code>, <code>claim_account</code>, <code>verify_claim</code>.</p>
 
     <h2 id="skills">Skills</h2>
+    <p>All three skills live in the public, auditable <a href="https://github.com/agentmetal/agents" rel="noopener">agentmetal/agents</a> repo — generated from source, no hidden instructions.</p>
+    <p><strong>Claude Code / Agent SDK</strong> — one command installs the plugin (bundles the 11-tool MCP server <em>and</em> the usage skill that teaches the full flow):</p>
+    <div class="codeblock"><span class="cb-label">claude code — plugin</span><pre><span class="c-grn">$</span> <span class="c-ink">/plugin marketplace add agentmetal/agents</span>
+<span class="c-grn">$</span> <span class="c-ink">/plugin install agentmetal@agentmetal</span></pre></div>
+    <p>Prefer just the tools? Add the <a href="#mcp">MCP server</a> on its own.</p>
     <ul>
-      <li><strong>OpenClaw / ClawHub</strong> — install the <code>agentmetal</code> skill; it teaches your agent the full flow and ships an <code>agentmetal up</code> CLI. Auditable, no hidden instructions.</li>
-      <li><strong>Hermes</strong> — drop the skill file into <code>~/.hermes/skills/</code>.</li>
-      <li><strong>Claude Code / Agent SDK</strong> — a <code>SKILL.md</code> plus the MCP server above.</li>
+      <li><strong>OpenClaw / ClawHub</strong> — the <code>agentmetal</code> skill teaches the full flow and ships an <code>agentmetal&nbsp;up</code> CLI: <a href="https://github.com/agentmetal/agents/tree/main/skills/clawhub" rel="noopener">skills/clawhub</a>.</li>
+      <li><strong>Hermes</strong> — drop the skill file into <code>~/.hermes/skills/</code>: <a href="https://raw.githubusercontent.com/agentmetal/agents/main/skills/hermes/agentmetal.skill.md" rel="noopener">agentmetal.skill.md</a>.</li>
     </ul>
     <p>Every server we sell ships the skill preinstalled — the fleet knows how to grow itself, within your fair-use quota.</p>
 
