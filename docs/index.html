@@ -179,7 +179,7 @@
     <ul>
       <li><strong>T-24h:</strong> a preinstalled cron warns the resident agent (MOTD + file flag).</li>
       <li><strong>Expiry:</strong> server marked <code>expired</code> — the VM keeps running (grace).</li>
-      <li><strong>Expiry +24h:</strong> the VM is destroyed. No invoice, no dunning, no surprise bill.</li>
+      <li><strong>Expiry +24h:</strong> the VM is destroyed, and you're never invoiced or billed afterward.</li>
     </ul>
     <div class="codeblock"><span class="cb-label">renew</span><pre><span class="c-grn">$</span> <span class="c-ink">curl -X POST …/v1/servers/srv_kx04qd/extend -d '{"days": 7}'</span>
 <span class="c-amb">← 402</span> <span class="c-dim">(same dance)</span> <span class="c-ink">→ retry with X-PAYMENT →</span> <span class="c-grn">200</span>  { "expires_at": "2026-06-24…" }</pre></div>
