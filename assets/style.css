@@ -137,7 +137,15 @@ code {
 .btn-solid:hover { transform: translateY(-2px); box-shadow: 0 0 32px rgba(52,245,162,0.4); }
 .btn-ghost { border: 1px solid var(--line); color: var(--ink); }
 .btn-ghost:hover { border-color: var(--line-hot); color: var(--grn); transform: translateY(-2px); }
+.btn-live { border: 1px solid var(--line); color: var(--ink); display: inline-flex; align-items: center; gap: 8px; }
+.btn-live:hover { border-color: var(--line-hot); color: var(--grn); transform: translateY(-2px); }
 .btn-full { display: block; text-align: center; }
+
+/* Live indicator dot — reused by the hero button, ticker badge, and /live status. */
+.live-pulse {
+  width: 7px; height: 7px; border-radius: 50%; background: var(--grn);
+  box-shadow: 0 0 12px var(--grn); animation: pulse 2.4s ease-in-out infinite; flex: none;
+}
 
 .hero-meta { font-size: 12.5px; color: var(--dim); letter-spacing: 0.05em; }
 .hero-meta .sep { margin: 0 10px; }
@@ -158,6 +166,16 @@ a.hero-ticker:hover .ticker-track span { color: var(--mut); }
 .ticker-track span { font-size: 12px; color: var(--dim); letter-spacing: 0.08em; transition: color 0.2s; }
 .ticker-track i { font-style: normal; font-size: 12px; color: var(--grn); font-weight: 600; }
 @keyframes tick { to { transform: translateX(-50%); } }
+/* Static caps that overlay the marquee edges — left "LIVE" badge, right "go to live activity" cue. */
+.ticker-badge, .ticker-cta {
+  position: absolute; top: 0; bottom: 0; z-index: 3; display: inline-flex; align-items: center;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.12em; color: var(--dim);
+  pointer-events: none; background: var(--bg);
+}
+.ticker-badge { left: 0; gap: 7px; padding: 0 18px 0 32px; color: var(--grn); }
+.ticker-cta { right: 0; gap: 6px; padding: 0 32px 0 18px; color: var(--mut); }
+.ticker-cta span { color: var(--grn); }
+a.hero-ticker:hover .ticker-cta { color: var(--grn); }
 
 /* ============ SECTIONS ============ */
 .sect { position: relative; max-width: var(--max); margin: 0 auto; padding: 130px 32px 0; }
@@ -332,6 +350,8 @@ a.hero-ticker:hover .ticker-track span { color: var(--mut); }
   .nav-links a:not(.nav-cta) { display: none; }
   .hero, .sect { padding-left: 18px; padding-right: 18px; }
   .hero-ticker { margin-left: -18px; margin-right: -18px; }
+  .ticker-badge { padding-left: 18px; }
+  .ticker-cta { padding-right: 18px; }
   .flow { grid-template-columns: 1fr; }
   .foot { flex-direction: column; align-items: flex-start; }
 }
@@ -444,10 +464,7 @@ body[data-page="live"] { background: var(--bg); }
   display: inline-flex; align-items: center; gap: 8px;
   font-size: 12px; color: var(--dim); letter-spacing: 0.08em; margin-top: 18px;
 }
-.live-status .live-pulse {
-  width: 8px; height: 8px; border-radius: 50%; background: var(--grn);
-  box-shadow: 0 0 12px var(--grn); animation: pulse 2.4s ease-in-out infinite;
-}
+.live-status .live-pulse { width: 8px; height: 8px; }
 .live-status.is-stale .live-pulse { background: var(--amb); box-shadow: 0 0 12px var(--amb); }
 
 .feed { list-style: none; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--bg-2); }
